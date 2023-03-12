@@ -13,33 +13,34 @@ dotenv.config();
 const connect = () => {
   mongoose
     .connect(process.env.MONGO_URL)
-    .then(() => console.log("Connected to DB!"))
-    .catch((error) => {
-      throw error;
+    .then(() => {
+      console.log("Connected to DB!");
+    })
+    .catch((err) => {
+      throw err;
     });
 };
 
-// MIDDLEWARE
+//middlewares
+app.use(cookieParser());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false })); // This piece of code is necessary to have access to the form data
-app.use((error, req, res, next) => {
-  const status = error.status || 500;
-  const message = error.message || "Something went wrong!";
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/videos", videoRoutes);
+app.use("/comments", commentRoutes);
+
+//error handler
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const message = err.message || "Something went wrong!";
   return res.status(status).json({
     success: false,
     status,
     message,
   });
 });
-app.use(cookieParser());
 
-// ROUTES
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/videos", videoRoutes);
-app.use("/comments", commentRoutes);
-
-app.listen("8800", () => {
+app.listen(8800, () => {
   connect();
-  console.log(`Server running on port: 8800!`);
+  console.log("Connected to Server at Port: 8800!");
 });
