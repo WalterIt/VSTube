@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
-// import { auth, provider } from "../firebase";
-// import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../firebase.config";
+import { signInWithPopup } from "firebase/auth";
 // import { async } from "@firebase/util";
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../App";
@@ -93,26 +93,27 @@ const SignIn = () => {
     }
   };
 
-  // const signInWithGoogle = async () => {
-  //   dispatch(loginStart());
-  //   signInWithPopup(auth, provider)
-  //     .then((result) => {
-  //       axios
-  //         .post("/auth/google", {
-  //           name: result.user.displayName,
-  //           email: result.user.email,
-  //           img: result.user.photoURL,
-  //         })
-  //         .then((res) => {
-  //           console.log(res);
-  //           dispatch(loginSuccess(res.data));
-  //           navigate("/");
-  //         });
-  //     })
-  //     .catch((error) => {
-  //       dispatch(loginFailure());
-  //     });
-  // };
+  const signInWithGoogle = async () => {
+    dispatch(loginStart());
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // console.log(result);
+        axios
+          .post(`${apiUrl}/auth/google`, {
+            name: result.user.displayName,
+            email: result.user.email,
+            img: result.user.photoURL,
+          })
+          .then((res) => {
+            // console.log(res);
+            dispatch(loginSuccess(res.data));
+            navigate("/");
+          });
+      })
+      .catch((error) => {
+        dispatch(loginFailure());
+      });
+  };
 
   //TODO: REGISTER FUNCTIONALITY
 
@@ -129,7 +130,7 @@ const SignIn = () => {
         />
         <Button onClick={handleLogin}>Sign in</Button>
         <Title>or</Title>
-        <Button>Signin with Google</Button>
+        <Button onClick={signInWithGoogle}>Signin with Google</Button>
         <Title>or</Title>
         <Input
           placeholder="username"

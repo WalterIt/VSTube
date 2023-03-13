@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 
 export const apiUrl = process.env.REACT_APP_BASE_URL;
-console.log(apiUrl);
+// console.log(apiUrl);
 
 axios.defaults.withCredentials = true;
 
