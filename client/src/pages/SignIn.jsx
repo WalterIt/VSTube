@@ -1,5 +1,13 @@
+import axios from "axios";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-
+import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
+// import { auth, provider } from "../firebase";
+// import { signInWithPopup } from "firebase/auth";
+// import { async } from "@firebase/util";
+import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../App";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -15,7 +23,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   background-color: ${({ theme }) => theme.bgLighter};
   border: 1px solid ${({ theme }) => theme.soft};
-  padding: 20px 60px;
+  padding: 20px 50px;
   gap: 10px;
 `;
 
@@ -23,9 +31,9 @@ const Title = styled.h1`
   font-size: 24px;
 `;
 
-const Subtitle = styled.h2`
+const SubTitle = styled.h2`
   font-size: 20px;
-  font-weight: 400;
+  font-weight: 300;
 `;
 
 const Input = styled.input`
@@ -34,15 +42,17 @@ const Input = styled.input`
   padding: 10px;
   background-color: transparent;
   width: 100%;
-  background-color: ${({ theme }) => theme.soft};
-  color: ${({ theme }) => theme.textSoft};
+  color: ${({ theme }) => theme.text};
 `;
+
 const Button = styled.button`
   border-radius: 3px;
   border: none;
   padding: 10px 20px;
   font-weight: 500;
   cursor: pointer;
+  background-color: ${({ theme }) => theme.soft};
+  color: ${({ theme }) => theme.textSoft};
 `;
 
 const More = styled.div`
@@ -61,19 +71,77 @@ const Link = styled.span`
 `;
 
 const SignIn = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    dispatch(loginStart());
+    try {
+      const res = await axios.post(`${apiUrl}/auth/signin`, {
+        email,
+        password,
+      });
+      // console.log(res.data);
+      dispatch(loginSuccess(res.data));
+      navigate("/");
+    } catch (err) {
+      dispatch(loginFailure());
+    }
+  };
+
+  // const signInWithGoogle = async () => {
+  //   dispatch(loginStart());
+  //   signInWithPopup(auth, provider)
+  //     .then((result) => {
+  //       axios
+  //         .post("/auth/google", {
+  //           name: result.user.displayName,
+  //           email: result.user.email,
+  //           img: result.user.photoURL,
+  //         })
+  //         .then((res) => {
+  //           console.log(res);
+  //           dispatch(loginSuccess(res.data));
+  //           navigate("/");
+  //         });
+  //     })
+  //     .catch((error) => {
+  //       dispatch(loginFailure());
+  //     });
+  // };
+
+  //TODO: REGISTER FUNCTIONALITY
+
   return (
     <Container>
       <Wrapper>
-        <Title>Sign In</Title>
-        <Subtitle>to continue to VSTube</Subtitle>
-        <Input type="email" placeholder="Email" required />
-        <Input type="password" placeholder="Password" required />
-        <Button>Sign In</Button>
+        <Title>Sign in</Title>
+        <SubTitle>to continue to VSTube</SubTitle>
+        <Input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+        <Input
+          type="password"
+          placeholder="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button onClick={handleLogin}>Sign in</Button>
         <Title>or</Title>
-        <Input type="text" placeholder="User name" required />
-        <Input type="email" placeholder="Email" required />
-        <Input type="password" placeholder="Password" required />
-        <Button>Sign Up</Button>
+        <Button>Signin with Google</Button>
+        <Title>or</Title>
+        <Input
+          placeholder="username"
+          onChange={(e) => setName(e.target.value)}
+        />
+        <Input placeholder="email" onChange={(e) => setEmail(e.target.value)} />
+        <Input
+          type="password"
+          placeholder="password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button>Sign up</Button>
       </Wrapper>
       <More>
         English(USA)

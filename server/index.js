@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
 import userRoutes from "./routes/users.js";
 import videoRoutes from "./routes/videos.js";
 import commentRoutes from "./routes/comments.js";
@@ -24,6 +25,14 @@ const connect = () => {
 //middlewares
 app.use(cookieParser());
 app.use(express.json());
+const CorsOptions = {
+  origin: true,
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+app.use(cors(CorsOptions));
+
+// ROUTES
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/videos", videoRoutes);
@@ -40,7 +49,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(8800, () => {
+app.listen(5000, () => {
   connect();
-  console.log("Connected to Server at Port: 8800!");
+  console.log("Connected to Server at Port: 5000!");
 });

@@ -6,7 +6,7 @@ import {
   addView,
   getByTag,
   getVideo,
-  random,
+  randomVideos,
   search,
   subscribed,
   trend,
@@ -17,14 +17,14 @@ const router = express.Router();
 
 //create a video
 router.post("/", verifyToken, addVideo);
+router.get("/random", randomVideos);
+router.get("/trend", trend);
+router.get("/subscribed", verifyToken, subscribed);
+router.get("/search", search);
 router.put("/:id", verifyToken, updateVideo);
 router.delete("/:id", verifyToken, deleteVideo);
-router.get("/find/:id", getVideo);
+router.get("/:id", getVideo);
 router.put("/view/:id", addView);
-router.get("/trend", trend);
-router.get("/random", random);
-router.get("/subscribed", verifyToken, subscribed);
 router.get("/tags", getByTag);
-router.get("/search", search);
 
 export default router;
