@@ -21,10 +21,10 @@ router.get("/random", randomVideos);
 router.get("/trend", trend);
 router.get("/subscribed", verifyToken, subscribed);
 router.get("/search", search);
+router.get("/tags", getByTag);
 router.put("/:id", verifyToken, updateVideo);
 router.delete("/:id", verifyToken, deleteVideo);
 router.get("/:id", getVideo);
 router.put("/view/:id", addView);
-router.get("/tags", getByTag);
 
 export default router;
