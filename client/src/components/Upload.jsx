@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-// import {
-//   getStorage,
-//   ref,
-//   uploadBytesResumable,
-//   getDownloadURL,
-// } from "firebase/storage";
-// import app from "../firebase";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import app from "../firebase.config.js";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../App";
 
 const Container = styled.div`
   width: 100%;
@@ -20,6 +21,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 10;
 `;
 
 const Wrapper = styled.div`
@@ -91,39 +93,39 @@ const Upload = ({ setOpen }) => {
   };
 
   const uploadFile = (file, urlType) => {
-    // const storage = getStorage(app);
+    const storage = getStorage(app);
     const fileName = new Date().getTime() + file.name;
-    // const storageRef = ref(storage, fileName);
-    // const uploadTask = uploadBytesResumable(storageRef, file);
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, file);
 
-    //   uploadTask.on(
-    //     "state_changed",
-    //     (snapshot) => {
-    //       const progress =
-    //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-    //       urlType === "imgUrl"
-    //         ? setImgPerc(Math.round(progress))
-    //         : setVideoPerc(Math.round(progress));
-    //       switch (snapshot.state) {
-    //         case "paused":
-    //           console.log("Upload is paused");
-    //           break;
-    //         case "running":
-    //           console.log("Upload is running");
-    //           break;
-    //         default:
-    //           break;
-    //       }
-    //     },
-    //     (error) => {}
-    //     () => {
-    //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-    //         setInputs((prev) => {
-    //           return { ...prev, [urlType]: downloadURL };
-    //         });
-    //       });
-    //     }
-    //   );
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        urlType === "imgUrl"
+          ? setImgPerc(Math.round(progress))
+          : setVideoPerc(Math.round(progress));
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            break;
+          case "running":
+            console.log("Upload is running");
+            break;
+          default:
+            break;
+        }
+      },
+      (error) => {},
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setInputs((prev) => {
+            return { ...prev, [urlType]: downloadURL };
+          });
+        });
+      }
+    );
   };
 
   useEffect(() => {
@@ -136,7 +138,7 @@ const Upload = ({ setOpen }) => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    const res = await axios.post("/videos", { ...inputs, tags });
+    const res = await axios.post(`${apiUrl}/videos`, { ...inputs, tags });
     setOpen(false);
     res.status === 200 && navigate(`/video/${res.data._id}`);
   };
@@ -148,7 +150,7 @@ const Upload = ({ setOpen }) => {
         <Title>Upload a New Video</Title>
         <Label>Video:</Label>
         {videoPerc > 0 ? (
-          "Uploading:" + videoPerc
+          "Uploading: " + videoPerc + "%"
         ) : (
           <Input
             type="file"
@@ -175,7 +177,7 @@ const Upload = ({ setOpen }) => {
         />
         <Label>Image:</Label>
         {imgPerc > 0 ? (
-          "Uploading:" + imgPerc + "%"
+          "Uploading: " + imgPerc + "%"
         ) : (
           <Input
             type="file"

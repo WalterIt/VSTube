@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { format } from "timeago.js";
 import styled from "styled-components";
+import { apiUrl } from "../App";
 
 const Container = styled.div`
   display: flex;
@@ -41,8 +43,8 @@ const Comment = ({ comment }) => {
 
   useEffect(() => {
     const fetchComment = async () => {
-      const res = await axios.get(`/users/find/${comment.userId}`);
-      setChannel(res.data)
+      const res = await axios.get(`${apiUrl}/users/${comment.userId}`);
+      setChannel(res.data);
     };
     fetchComment();
   }, [comment.userId]);
@@ -52,7 +54,7 @@ const Comment = ({ comment }) => {
       <Avatar src={channel.img} />
       <Details>
         <Name>
-          {channel.name} <Date>1 day ago</Date>
+          {channel.name} <Date>{format(channel?.createdAt)}</Date>
         </Name>
         <Text>{comment.desc}</Text>
       </Details>

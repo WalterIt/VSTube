@@ -108,7 +108,10 @@ const Navbar = ({ darkMode, setDarkMode }) => {
           </Item>
           {currentUser ? (
             <User>
-              <VideoCallOutlinedIcon onClick={() => setOpen(true)} />
+              <VideoCallOutlinedIcon
+                onClick={() => setOpen(true)}
+                style={{ cursor: "pointer" }}
+              />
               <Avatar src={currentUser.img} />
               {currentUser.name}
             </User>
